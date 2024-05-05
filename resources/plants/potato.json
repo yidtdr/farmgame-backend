@@ -1,0 +1,9 @@
+{
+    "name": "potato",
+    "seed":{
+        "price": 5,
+        "amount": 2,
+        "minimumLvl": 0,
+        "timeToGrow": 15
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "name": "carrot",
+    "seed":{
+        "price": 3,
+        "amount": 7,
+        "minimumLvl": 0,
+        "timeToGrow": 10
+    }
+}

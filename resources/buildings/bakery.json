@@ -1,0 +1,34 @@
+{
+    "name": "bakery",
+    "price": 30,
+    "maxSlots": 3,
+    "workTypes":
+    {
+        "bread":
+        {
+            "timeToFinish": 15,
+            "items":
+            {
+                "wheat": 3,
+                "potato": 2
+            },
+            "products":
+            {
+                "bread": 1
+            }
+        },
+        "bulka":
+        {
+            "timeToFinish": 15,
+            "items":
+            {
+                "wheat": 1,
+                "carrot": 2
+            },
+            "products":
+            {
+                "bulka": 1
+            }
+        }
+    }
+}

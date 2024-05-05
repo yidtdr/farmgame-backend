@@ -1,0 +1,9 @@
+{
+    "name": "wheat",
+    "seed":{
+        "price": 2,
+        "amount": 3,
+        "minimumLvl": 0,
+        "timeToGrow": 10
+    }
+}

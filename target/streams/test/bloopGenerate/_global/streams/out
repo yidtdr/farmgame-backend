@@ -1,0 +1,4 @@
+[debug] [bestgame-test] Classpath dependencies List()
+[debug] [bestgame-test] Dependencies from configurations List(bestgame)
+[debug] Bloop wrote the configuration of project 'bestgame-test' to 'D:\bestgame\.bloop\bestgame-test.json'
+[success] Generated .bloop\bestgame-test.json

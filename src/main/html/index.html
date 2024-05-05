@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+</head>
+<body>
+    <div>
+        <input type="text" id="input1" placeholder="text" />
+        <button id="startGame">Start</button>
+        <button id="send">connct</button>
+    </div>
+    <hr>
+    <div>
+        <label>integer</label>
+        <input type="number" id="inputint" placeholder="integer"/>
+        <label>x</label>
+        <input type="number" id="inputx" placeholder="x" />
+        <label>y</label>
+        <input type="number" id="inputy" placeholder="y" />
+        <label>string</label>
+        <input type="text" id="inputstring" placeholder="string" />
+    </div>
+    <hr>
+    <button id="use">use</button>   
+    <button id="collect">collect</button>
+    <button id="buy">buy</button>
+    <button id="place">place</button>
+    <hr>
+    <div>
+        <h4 id="output"></h4>
+    </div>
+    <script>
+        var socket;
+        document.getElementById('startGame').onclick = (function()
+        {
+            socket = new WebSocket('ws:localhost:8000');
+            socket.onmessage = (m) => {
+                const data = JSON.parse(m.data)
+
+                if (data.dataType == "game-session")
+                {
+                    document.getElementById('output').innerText = `money: ${data.player.money}
+                    Seeds: 
+                    wheat: ${data.player.SeedsInventory.map["wheat"] ? data.player.SeedsInventory.map["wheat"] : 0}
+                    potato: ${data.player.SeedsInventory.map["potato"] ? data.player.SeedsInventory.map["potato"] : 0}
+                    carrot: ${data.player.SeedsInventory.map["carrot"] ? data.player.SeedsInventory.map["carrot"] : 0}
+                    bulka: ${data.player.ItemInventory.map["bulka"] ? data.player.ItemInventory.map["bulka"] : 0}`
+                    console.log(data.world)
+                }
+                else if (data.dataType == "result-code")
+                {
+                    console.log(data.code)
+                }
+            }
+        })
+        document.getElementById('send').onclick = () => {
+            socket.send(`connect/username&=${document.getElementById('input1').value}`)
+        }
+        document.getElementById('use').onclick = () => {
+            const type = document.getElementById('inputstring').value
+            const x = document.getElementById('inputx').value
+            const y = document.getElementById('inputy').value
+            socket.send(`use/${type}/${x}/${y}`)
+        }
+        document.getElementById('collect').onclick = () => {
+            const x = document.getElementById('inputx').value
+            const y = document.getElementById('inputy').value
+            socket.send(`collect/${x}/${y}`)
+        }
+        document.getElementById('buy').onclick = () => {
+            const type = document.getElementById('inputstring').value
+            const amount = document.getElementById('inputint').value
+            console.log(`buy/${type}/${amount}`)
+            socket.send(`buy/${type}/${amount}`)
+        }
+        document.getElementById('place').onclick = () => {
+            const x = document.getElementById('inputx').value
+            const y = document.getElementById('inputy').value
+            const type = document.getElementById('inputstring').value
+            socket.send(`place/${type}/${x}/${y}`)
+        }
+    </script>
+</body>
+</html>
