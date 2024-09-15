@@ -1,0 +1,20 @@
+{
+    "levels": [
+        {
+            "price": 1000,
+            "capacityBonus": 20
+        },
+        {
+            "price": 2000,
+            "capacityBonus": 90
+        },
+        {
+            "price": 3000,
+            "capacityBonus": 120
+        },
+        {
+            "price": 4000,
+            "capacityBonus": 220
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Deal_test_2",
+    "udstPrice": 500000,
+    "reward":{
+        "token": 2000000001,
+        "boosters":[
+            {
+                "boosterType": "WorkSpeed",
+                "percentage": 20,
+                "time": 100
+            },
+            {
+                "boosterType": "WorkSpeed",
+                "percentage": 50,
+                "time": 1000
+            }
+        ]
+    }
+}

@@ -2,43 +2,47 @@ import gameClasses._
 import zio.json.JsonEncoder
 import zio.json.DeriveJsonEncoder
 import zio.json.ast.Json
+import zio.json._
+import java.time.{Instant, Duration}
+import jsonModels._
 
-case class ItemJSON(name: String)
-object ItemJSON {
-  implicit val encoder: JsonEncoder[ItemJSON] = DeriveJsonEncoder.gen[ItemJSON]
-}
-
-case class ItemsContainerJSON(map: Map[String, Int])
-object ItemsContainerJSON {
-  implicit val encoder: JsonEncoder[ItemsContainerJSON] = DeriveJsonEncoder.gen[ItemsContainerJSON]
-}
-
-case class PlayerJSON(money: Int, SeedsInventory: ItemsContainerJSON, ItemInventory: ItemsContainerJSON)
-object PlayerJSON {
-  implicit val encoder: JsonEncoder[PlayerJSON] = DeriveJsonEncoder.gen[PlayerJSON]
-}
-
-case class TileJSON(occupied: Boolean, place: String)
-object TileJSON {
-  implicit val encoder: JsonEncoder[TileJSON] = DeriveJsonEncoder.gen[TileJSON]
-}
-
-case class WorldJSON(tileArray: Array[Array[TileJSON]])
-object WorldJSON {
-  implicit val encoder: JsonEncoder[WorldJSON] = DeriveJsonEncoder.gen[WorldJSON]
-}
-
-case class GameJSON(dataType: String, player: PlayerJSON, world: WorldJSON)
+case class GameJSON(dataType: String, 
+                    player: PlayerJSON, 
+                    world: Option[WorldJSON], 
+                    deposits: Option[Array[DepositJSON]], withdraws: Option[Array[WithdrawJSON]],
+                    wallet: WalletJSON,
+                    availableDeals: Option[Map[String, Deal]],
+                    availableBoosters: Option[Array[BoosterJSON]],
+                    activeBoosters: ActiveBoostersJSON)
 object GameJSON {
-  def fromGame(game: Game): GameJSON = GameJSON(
-    "game-session",
-    PlayerJSON(
-      game.player.money, 
-      ItemsContainerJSON(game.player.SeedsInventory.items.map { case (item, count) => item -> count }),
-      ItemsContainerJSON(game.player.ItemInventory.items.map { case (item, count) => item -> count })
-    ),
-    WorldJSON(game.world.tileArray.map(_.map(tile => TileJSON(tile.occupied, if (tile.place != null) tile.place.getName() else "none"))))
-  )
+  def fromGame(game: Game): GameJSON =
+    {
+      GameJSON(
+          "game-session",
+          PlayerJSON.fromPlayer(game.player),
+          Some(WorldJSON.fromWorld(game.world)),
+          Some(transaction_infoJSON.fromDeposits(game.TRANSFERS_INFO.deposits)),
+          Some(transaction_infoJSON.fromWithdraws(game.TRANSFERS_INFO.withdraws)),
+          WalletJSON.fromPlayer(game.player),
+          Some(Shop.deals.filter((_s, _d) => !game.player.Deals.boughtDeals(_d.name))),
+          Some(game.player.Deals.boosters),
+          ActiveBoostersJSON.fromPlayer(game.player)
+        )
+    } 
+  def fromGameRegen(game: Game): GameJSON =
+    {
+      GameJSON(
+          "game-session-regen",
+          PlayerJSON.fromPlayer(game.player),
+          None,
+          None,
+          None,
+          WalletJSON.fromPlayer(game.player),
+          None,
+          None,
+          ActiveBoostersJSON.fromPlayer(game.player)
+        )
+    }
 
   implicit val gameDataEncoder: JsonEncoder[GameJSON] = DeriveJsonEncoder.gen[GameJSON]
 }

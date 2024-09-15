@@ -5,9 +5,12 @@
 </head>
 <body>
     <div>
-        <input type="text" id="input1" placeholder="text" />
+        <input type="text" id="input1" placeholder="text"/>
         <button id="startGame">Start</button>
         <button id="send">connct</button>
+        <button id="regen">regen</button>
+        <button id="spam">spam</button>
+        <button id="set">set</button>
     </div>
     <hr>
     <div>
@@ -25,27 +28,68 @@
     <button id="collect">collect</button>
     <button id="buy">buy</button>
     <button id="place">place</button>
+    <button id="spin">spin</button>
+    <button id="completeOrder">complete order</button>
+    <button id="rerollOrder">reroll order</button>
+    <button id="upgrade">upgrade</button>
+    <button id="claim">claim</button>
+    <button id="withdraw">withdraw</button>
+    <button id="buyslot">buy Slot</button>
+    <button id="buydeal">buy Deal</button>
+    <button id="activateb">activate booster</button>
     <hr>
     <div>
         <h4 id="output"></h4>
     </div>
     <script>
         var socket;
+        var gameSession;
+        var timeStamp;
+        var amount = 200;
+        const onConnectClick = () => {
+            if (amount)
+            {
+                const abc = new WebSocket('ws:localhost:8000');
+                setTimeout(() => {
+                    abc.send(`connect/username&=${Math.random()}`)
+                    setInterval(() => {
+                        abc.send(`buy/wheat/1`)
+                    }, 100)
+                }, 10000)
+                timeStamp = Date.now()
+                amount = amount - 1;
+            }
+
+        }
         document.getElementById('startGame').onclick = (function()
         {
             socket = new WebSocket('ws:localhost:8000');
             socket.onmessage = (m) => {
+                console.log(`request time: ${Date.now() - timeStamp}`)
                 const data = JSON.parse(m.data)
+                console.log(data)
+                console.log(Date.now())
 
-                if (data.dataType == "game-session")
+                if (data.dataType == "game-session") 
                 {
-                    document.getElementById('output').innerText = `money: ${data.player.money}
-                    Seeds: 
-                    wheat: ${data.player.SeedsInventory.map["wheat"] ? data.player.SeedsInventory.map["wheat"] : 0}
-                    potato: ${data.player.SeedsInventory.map["potato"] ? data.player.SeedsInventory.map["potato"] : 0}
-                    carrot: ${data.player.SeedsInventory.map["carrot"] ? data.player.SeedsInventory.map["carrot"] : 0}
-                    bulka: ${data.player.ItemInventory.map["bulka"] ? data.player.ItemInventory.map["bulka"] : 0}`
-                    console.log(data.world)
+                    gameSession = data
+                }
+                else if (data.dataType == "game-session-regen")
+                {
+                    gameSession.player = data.player
+                }
+
+                if ((data.dataType == "game-session") || (data.dataType == "game-session-regen")) 
+                {
+                    let inv = ""
+                    for (const name in gameSession.player.Inventory.map) {
+                        inv += name + ": " + gameSession.player.Inventory.map[name] + "\n" 
+                    }
+                    document.getElementById('output').innerText = `money: ${gameSession.player.money}
+                    ${inv}
+                    Spin ${gameSession.player["spin"] ? gameSession.player.spin.items.map((el) => {return el.item + " " + el.amount}): "none"}
+                    Orders ${gameSession.player["orders"] ? gameSession.player.orders.map((el) => {return "\n========Order======\n" + "price: " + el.orderPrice + el.orderItems.toString() + "\nCompleted: " + el.completed + "\ntimeStamp: " + el.timeStamp}) : "none"}
+                    buildings: ${gameSession.world.tileArray.map((el) => {return "\n////////////BUILDING/////////////\n" + "name: " + el.name + el.slots.map((slot) => {return "\n////////////////SLOT///////////////////\nslot name: " + slot.workName + " slotTimeStart: " + slot.workStartTimeStamp + "\n////////////////SLOT END///////////\n"}) + "\nx: " + el.x + "\ny: " + el.y + "\n////////////////////BUILDING END///////////////"})}`
                 }
                 else if (data.dataType == "result-code")
                 {
@@ -54,30 +98,95 @@
             }
         })
         document.getElementById('send').onclick = () => {
-            socket.send(`connect/username&=${document.getElementById('input1').value}`)
+            socket.send(`connect/${document.getElementById('input1').value}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('spam').onclick = () => {
+            setInterval(() => {onConnectClick()}, 100)
         }
         document.getElementById('use').onclick = () => {
             const type = document.getElementById('inputstring').value
             const x = document.getElementById('inputx').value
             const y = document.getElementById('inputy').value
             socket.send(`use/${type}/${x}/${y}`)
+            timeStamp = Date.now()
         }
         document.getElementById('collect').onclick = () => {
             const x = document.getElementById('inputx').value
             const y = document.getElementById('inputy').value
             socket.send(`collect/${x}/${y}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('claim').onclick = () => {
+            const amount = document.getElementById('inputint').value
+            socket.send(`claim/${amount}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('withdraw').onclick = () => {
+            const amount = document.getElementById('inputint').value
+            socket.send(`withdraw/${amount}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('upgrade').onclick = () => {
+            const x = document.getElementById('inputx').value
+            const y = document.getElementById('inputy').value
+            socket.send(`upgrade/${x}/${y}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('buyslot').onclick = () => {
+            const x = document.getElementById('inputx').value
+            const y = document.getElementById('inputy').value
+            socket.send(`buyslot/${x}/${y}`)
+            timeStamp = Date.now()
         }
         document.getElementById('buy').onclick = () => {
             const type = document.getElementById('inputstring').value
             const amount = document.getElementById('inputint').value
-            console.log(`buy/${type}/${amount}`)
             socket.send(`buy/${type}/${amount}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('buydeal').onclick = () => {
+            const type = document.getElementById('inputstring').value
+            socket.send(`buydeal/${type}`)
+            timeStamp = Date.now()
         }
         document.getElementById('place').onclick = () => {
             const x = document.getElementById('inputx').value
             const y = document.getElementById('inputy').value
             const type = document.getElementById('inputstring').value
             socket.send(`place/${type}/${x}/${y}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('spin').onclick = () => {
+            socket.send(`spin`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('completeOrder').onclick = () => {
+            const integer = document.getElementById('inputint').value
+            socket.send(`order/complete/${integer}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('rerollOrder').onclick = () => {
+            const integer = document.getElementById('inputint').value
+            socket.send(`order/reroll/${integer}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('activateb').onclick = () => {
+            const integer = document.getElementById('inputint').value
+            socket.send(`activateb/${integer}`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('regen').onclick = () => {
+            socket.send(`regen`)
+            timeStamp = Date.now()
+        }
+        document.getElementById('set').onclick = () => {
+            socket.send(`regen`)
+            socket.send(`invupgrade`)
+            socket.send(`invupgrade`)
+            socket.send(`invupgrade`)
+            socket.send(`regen`)
+            timeStamp = Date.now()
         }
     </script>
 </body>

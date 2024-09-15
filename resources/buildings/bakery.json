@@ -2,23 +2,28 @@
     "name": "bakery",
     "price": 30,
     "maxSlots": 3,
+    "sizex": 2,
+    "sizey": 3,
+    "maxLevel": 3,
+    "mapLimit": 2,
     "workTypes":
     {
-        "bread":
-        {
-            "timeToFinish": 15,
-            "items":
-            {
-                "wheat": 3,
-                "potato": 2
-            },
-            "products":
-            {
-                "bread": 1
-            }
+        "bread": 
+        { 
+            "minLevel": 1, 
+            "timeToFinish": 15, 
+            "items": 
+            { 
+                "wheat": 3 
+            }, 
+            "products": 
+            { 
+                "bread": 1 
+            } 
         },
         "bulka":
         {
+            "minLevel": 3,
             "timeToFinish": 15,
             "items":
             {
@@ -29,6 +34,23 @@
             {
                 "bulka": 1
             }
+        },
+        "millet":
+        {
+            "minLevel": 3,
+            "timeToFinish": 15,
+            "items":
+            {
+                "wheat": 10
+            },
+            "products":
+            {
+                "millet": 1
+            }
         }
-    }
+    },
+    "upgradesPrice":
+    [
+        100, 200, 300
+    ]
 }

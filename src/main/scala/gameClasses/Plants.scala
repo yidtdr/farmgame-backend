@@ -6,7 +6,7 @@ import java.nio.file.{Files, Path}
 import _root_.`<empty>`.ENVars
 
 case class Seed(minimumLvl: Int, price: Int, amount: Int, timeToGrow: Int)
-case class Plant(name: String, seed: Seed) extends Item
+case class Plant(name: String, orderPrice: Int, orderTokenPrice: Int, seed: Seed, orderAmountMin: Int, orderAmountMax: Int) extends Item
 
 
 object Seed {
@@ -26,9 +26,9 @@ object Plants
     plants = plants.updated(name, nameToLoadPlant(name))
   }
 
-  def print(name: String) = 
+  def test(name: String) = 
   {
-    println(s"${name}")
+    println(s"PLANTS_CLASS_TEST:${name}")
   }
 
   def nameToPlant(name: String): Plant =
@@ -66,4 +66,18 @@ object Plants
   def nameToLoadPlant(name: String): Plant =
     loadPlant(ENVars.ASSETS.SEEDS(name))
 
+  def nameToOrderAmountLimits(name: String): (Int, Int) =
+  {
+    (nameToPlant(name).orderAmountMin, nameToPlant(name).orderAmountMax)
+  }
+
+  def nameToPrice(name: String): Int =
+    {
+      nameToPlant(name).orderPrice
+    }
+  
+  def nameToTokenPrice(name: String): Int =
+    {
+      nameToPlant(name).orderTokenPrice
+    }
 }

@@ -11,28 +11,13 @@ class Tile extends Serializable{
         place = BuildingManager.getBuildingByName(building);
         GE.OK
     }
-    def plant(plantName: String): Int =
-    {
-        if (occupied)
-        {
-            place.use(plantName)
-        }
-        else 
-        {
-            GE.GardenNotPlaced
-        }
-    }
     def collect(): Int =
     {
         if (occupied)
         {
             place.collect()
             GE.OK
-        }
-        else
-        {
-            GE.BuildingNotPlaced
-        }
+        } else GE.BuildingNotPlaced
     }
     def isOccupied(): Boolean =
     {

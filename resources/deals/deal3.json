@@ -1,0 +1,24 @@
+{
+    "name": "Deal_test_3",
+    "tonPrice": 500000,
+    "reward":{
+        "token": 2000000001,
+        "boosters":[
+            {
+                "boosterType": "OrderItems",
+                "percentage": 80,
+                "time": 100
+            },
+            {
+                "boosterType": "OrderMoney",
+                "percentage": 200,
+                "time": 100
+            },
+            {
+                "boosterType": "GrowSpeed",
+                "percentage": 200,
+                "time": 100
+            }
+        ]
+    }
+}

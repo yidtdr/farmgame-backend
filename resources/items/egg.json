@@ -1,0 +1,7 @@
+{
+    "name": "egg",
+    "orderPrice": 10,
+    "orderTokenPrice": 10,
+    "orderAmountMin": 3,
+    "orderAmountMax": 10
+}

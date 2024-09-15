@@ -1,0 +1,23 @@
+{
+    "name": "coop",
+    "price": 100,
+    "speed": 50,
+    "maxAnimalAmount": 10,
+    "animalPrice": 13,
+    "sizex": 3,
+    "sizey": 3,
+    "maxLevel": 5,
+    "mapLimit": 2,
+    "intake":
+    {
+        "millet": 0
+    },
+    "products":
+    {
+        "egg": 1
+    },
+    "upgradesPrice":
+    [
+        100, 200, 300, 400
+    ]
+}
