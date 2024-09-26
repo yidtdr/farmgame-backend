@@ -52,6 +52,14 @@ object ENVars {
 		{
 			val cycleTime = 30;
 		}
+
+		object BUILDINGS
+		{
+			val building_bakery_per_building_k 	= 100
+			val building_corral_per_building_k 	= 100
+			val building_corral_per_animal_k 	= 1.1
+			val building_garden_per_building_k 	= 1.1
+		}
 	}
 	object ASSETS
 	{
@@ -90,5 +98,10 @@ object ENVars {
 		
 		val garden = Path.of(s"resources/buildings/garden.json")
 		
+		val olist = readResult.getStringList("ASSETS.BUILDINGS.OBSTACLES.list")
+		var OBSTACLES: Map[String, Path] = Map.empty;
+		olist.forEach((item) => {
+			OBSTACLES = OBSTACLES.updated(item, Path.of(s"resources/buildings/${item}.json"));
+		})
 	}
 }

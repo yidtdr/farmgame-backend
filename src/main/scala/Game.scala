@@ -1,5 +1,5 @@
 import gameClasses._
-import _root_.serializationModels._
+import _root_.serialization._
 import zio.json._
 import java.math.BigInteger
 
@@ -22,13 +22,14 @@ class Game(telegram_ID: Long) extends Serializable{
 
   def firstInit() = {
     player.Inventory.addAmount("wheat", 0);
+    //ObstacleManager.___PLACE_OBSTACLE_UNSAFE(this, 10, 10, "lake")
   }
 
   def getState(): String = {
     lastOperation match
       case GE.Connected                         => s"${GameJSON.fromGame(this).toJson}"
-      case GE.Regeneration                      => s"${GameJSON.fromGame(this).toJson}"
-    //case GE.Regeneration                      => s"${GameJSON.fromGameRegen(this).toJson}"
+    //case GE.Regeneration                      => s"${GameJSON.fromGame(this).toJson}"
+      case GE.Regeneration                      => s"${GameJSON.fromGameRegen(this).toJson}"
 
       case _: Int                               => s"${OperationJSON.fromCode(this.lastOperation).toJson}"
   }
@@ -52,7 +53,7 @@ class Game(telegram_ID: Long) extends Serializable{
   def onBuy(item: String, amount: Int) = { lastOperation = Shop.buy(item, amount, player) }
   def onPlace(building: String, x: Int, y: Int) =
   {
-    if (player.Stats.buildingsPlaced(building) > 0)
+    if (player.Stats.buildingsPlaced(building) < BuildingManager.getMapLimit(building))
     {
       val size = BuildingManager.getSize(building)
       if (world.validatePlace(x, y, size) == GE.OK)
@@ -62,7 +63,7 @@ class Game(telegram_ID: Long) extends Serializable{
         else lastOperation = GE.NotEnoughMoney
       } else lastOperation = GE.NotAbleToPlace
       if (lastOperation == GE.OK) {
-        val newValue = player.Stats.buildingsPlaced(building) - 1
+        val newValue = player.Stats.buildingsPlaced(building) + 1
         player.Stats.buildingsPlaced = player.Stats.buildingsPlaced.updated(building, newValue)
       }
     } else lastOperation = GE.BuildingLimitExceeded

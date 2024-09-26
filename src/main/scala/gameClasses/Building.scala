@@ -73,7 +73,12 @@ object BuildingManager{
 	}
 
 	def verifyPurchase(player: Player, building: String): Int ={
-		val price = getPrice(building)
+		val price = getBuildingType(building) match
+			case BuildingType.bakery 	=> (getPrice(building) * Math.pow(ENVars.GAME_SETTINGS.BUILDINGS.building_bakery_per_building_k, player.Stats.buildingsPlaced(building))).toInt
+			case BuildingType.garden 	=> (getPrice(building) * Math.pow(ENVars.GAME_SETTINGS.BUILDINGS.building_garden_per_building_k, player.Stats.buildingsPlaced(building))).toInt
+			case BuildingType.corral 	=> (getPrice(building) * Math.pow(ENVars.GAME_SETTINGS.BUILDINGS.building_corral_per_building_k, player.Stats.buildingsPlaced(building))).toInt
+			case BuildingType.bush 		=> getPrice(building)
+		
 		if (player.money >= price) {
 			getItemsByNameAndLevel(building, 1).foreach((name) => {
 				player.Inventory.addAmount(name, 0)

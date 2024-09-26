@@ -18,7 +18,7 @@ class Player extends Serializable{
   object Stats extends Serializable
   {
     var ordersCompleted: Int = 0;
-    var buildingsPlaced: Map[String, Int] = BuildingManager.typeByName.keySet.map(building => building -> BuildingManager.getMapLimit(building)).toMap
+    var buildingsPlaced: Map[String, Int] = BuildingManager.typeByName.keySet.map(building => building -> 0).toMap
   }
   
   object Deals extends Serializable

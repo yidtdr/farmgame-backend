@@ -148,11 +148,12 @@ object CorralManager
 	def buyAnimal(corral: Corral, player: Player): Int =
 	{
 		val corralInf = getCorral(corral.corralType)
+		val price = (corralInf.maxAnimalAmount * Math.pow(ENVars.GAME_SETTINGS.BUILDINGS.building_corral_per_animal_k, corralInf.animalPrice)).toInt
 		if (corral.animalAmount < corralInf.maxAnimalAmount)
 		{
-			if (player.money >= corralInf.animalPrice)
+			if (player.money >= price)
 			{
-				player.money -= corralInf.animalPrice;
+				player.money -= price;
 				corral.buyAnimal()
 			}
 			else

@@ -68,32 +68,36 @@ class Bakery(name: String) extends Buildable
 		val booster = player.ActiveBoosters.WorkSpeed
 		val (boosterPercentage, boosterTime) = BoosterManager.getInfo(booster)
 		var remainingBoosterTime = boosterTime
-		var timeOffset = 0
 
 		val newSlots = new LinkedList[Slot]
 		val workTypes = BakeryManager.getBakery(getName()).workTypes
-		var currentTime = Instant.now()
-		
+
+		var currentEndTime = Instant.now()
+
 		slots.forEach { slot =>
 			val workTypeInfo = workTypes(slot.name)
-			val originalTimeToFinish = Duration.between(currentTime, slot.workEndTimeStamp).getSeconds.toInt
-			val boostedTime = if (originalTimeToFinish > remainingBoosterTime)
-				Math.round(remainingBoosterTime * boosterPercentage / 100).toInt
-			else
-				Math.round(originalTimeToFinish * boosterPercentage / 100).toInt
 
-			val newStartTime = currentTime
+			val originalTimeToFinish = Duration.between(slot.workStartTimeStamp, slot.workEndTimeStamp).getSeconds.toInt
+
+			val boostedTime = if (originalTimeToFinish > remainingBoosterTime)
+			Math.round(remainingBoosterTime * boosterPercentage / 100).toInt
+			else
+			Math.round(originalTimeToFinish * boosterPercentage / 100).toInt
+
+			remainingBoosterTime = Math.max(remainingBoosterTime - originalTimeToFinish, 0)
+
+			val newStartTime = if (newSlots.isEmpty) slot.workStartTimeStamp else currentEndTime
 			val newSlot = new Slot(workTypeInfo, slot.name, newStartTime, boostedTime)
 
-			newSlots.add(newSlot)
-			currentTime = newSlot.workEndTimeStamp
+			currentEndTime = newSlot.workEndTimeStamp
 
-			remainingBoosterTime = Math.max((remainingBoosterTime - originalTimeToFinish + boostedTime), 0)
+			newSlots.add(newSlot)
 		}
 
 		slots = newSlots
-		lastEndTime = currentTime
+		lastEndTime = currentEndTime
 	}
+
 }
 
 object BakeryManager
